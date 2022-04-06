@@ -99,18 +99,40 @@ def noise_reducing(nums, window, method = 'med'):
         for i in range(len(nums)):
             if np.isnan(nums[i]):
                 reduced_nums = np.append(reduced_nums, nums[i])
-            elif i < window or i >= (len(nums) - window):
-                reduced_nums = np.append(reduced_nums, nums[i])
+            elif i < window:
+                for j in reversed(range(i+1)):
+                    if j != 0:
+                        reduced_nums = np.append(reduced_nums, np.nanmean(nums[i-j:i+j]))
+                        break
+                    else:
+                        reduced_nums = np.append(reduced_nums, nums[i])
+            elif i >= (len(nums) - window):
+                for j in reversed(range(len(nums) - i)):
+                    if j != 0:
+                        reduced_nums = np.append(reduced_nums, np.nanmean(nums[i-j:i+j]))
+                        break
+                    else:
+                        reduced_nums = np.append(reduced_nums, nums[i])
             else:
-                reduced_nums = np.append(reduced_nums,
-                                            np.nanmean(nums[i-window:i+window]))
+                reduced_nums = np.append(reduced_nums, np.nanmean(nums[i-window:i+window]))
     elif method == 'med':
         for i in range(len(nums)):
             if np.isnan(nums[i]):
                 reduced_nums = np.append(reduced_nums, nums[i])
-            elif i < window or i >= (len(nums) - window):
-                reduced_nums = np.append(reduced_nums, nums[i])
+            elif i < window:
+                for j in reversed(range(i+1)):
+                    if j != 0:
+                        reduced_nums = np.append(reduced_nums, np.nanmedian(nums[i-j:i+j]))
+                        break
+                    else:
+                        reduced_nums = np.append(reduced_nums, nums[i])
+            elif i >= (len(nums) - window):
+                for j in reversed(range(len(nums) - i)):
+                    if j != 0:
+                        reduced_nums = np.append(reduced_nums, np.nanmedian(nums[i-j:i+j]))
+                        break
+                    else:
+                        reduced_nums = np.append(reduced_nums, nums[i])
             else:
-                reduced_nums = np.append(reduced_nums,
-                                            np.nanmedian(nums[i-window:i+window]))
+                reduced_nums = np.append(reduced_nums, np.nanmedian(nums[i-window:i+window]))
     return reduced_nums
