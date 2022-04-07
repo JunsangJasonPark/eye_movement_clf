@@ -188,3 +188,22 @@ def get_angular_velocity(coordinate_data, px2deg):
         )
         
     return distance
+
+def draw_coordinate_velocity(coordinate_data, velocity_data):
+
+    plt.style.use('default')
+    plt.rcParams['figure.figsize'] = (10, 3)
+    plt.rcParams['font.size'] = 10
+
+    fig, coordinate = plt.subplots()
+
+    coordinate.set_xlabel('Timestamp')
+    coordinate.set_ylabel('X-Y coordinate')
+    coordinate.scatter(coordinate_data['Timestamp'], coordinate_data['X'], s = 6, color = 'black')
+    coordinate.scatter(coordinate_data['Timestamp'], coordinate_data['Y'], s = 6, color = 'black')
+
+    velocity = coordinate.twinx()
+    velocity.set_ylabel("Velocity(deg/s)")
+    velocity.plot(coordinate_data['Timestamp'], velocity_data, color='deeppink')
+
+    plt.show()
