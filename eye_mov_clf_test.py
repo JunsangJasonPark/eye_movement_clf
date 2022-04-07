@@ -1,6 +1,7 @@
 from math import atan2, degrees
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 
 def px2deg(screen_size, distance, screen_resolution):
     """
@@ -29,8 +30,6 @@ def load_data(file_name):
 
 def gap_fill_in(ts, x, y):
     """
-    Until now, this function is loading the data. However, soon it will be seperated from this function.
-
     ts(ms) = timestamp
     x(px) = x coordinate
     y(px) = y coordinate
@@ -136,3 +135,24 @@ def noise_reducing(nums, window, method = 'med'):
             else:
                 reduced_nums = np.append(reduced_nums, np.nanmedian(nums[i-window:i+window]))
     return reduced_nums
+
+def drawing_seperate_scatter(coordinate_data):
+    """
+    coordinate_data = dict('X coordinate': x, 'Y coordinate': y, 'Timestamp': ts)
+    """
+    legend = ['X coordinate', 'Y coordinate']
+    plt.scatter(coordinate_data['Timestamp'], coordinate_data['X coordinate'])
+    plt.scatter(coordinate_data['Timestamp'], coordinate_data['Y coordinate'])
+    plt.xlabel('Timestamp')
+    plt.ylabel('Coordinate')
+    plt.legend(legend)
+    return plt.show()
+
+def drawing_xy_scatter(coordinate_data):
+    """
+    coordinate_data
+    """
+    plt.scatter(coordinate_data['X coordinate'], coordinate_data['Y coordinate'], color = 'skyblue')
+    plt.xlabel('X coordinate')
+    plt.ylabel('Y coordinate')
+    return plt.show() 
