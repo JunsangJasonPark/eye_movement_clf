@@ -29,6 +29,7 @@ def load_data(file_name):
         'Timestamp': ts,
         'X':x,
         'Y': y
+
     }
     
     return coordinate_data
@@ -207,3 +208,45 @@ def draw_coordinate_velocity(coordinate_data, velocity_data):
     velocity.plot(coordinate_data['Timestamp'], velocity_data, color='deeppink')
 
     plt.show()
+
+def classify_events(velocity_data, velocity_threshold = 30):
+    
+    saccades = np.where(velocity_data > velocity_threshold)[0]
+    fixations = np.where(velocity_data <= velocity_threshold)[0]
+    blinks = np.where(np.isnan(velocity_data))[0][1:]
+    
+    events = {'saccades': saccades,
+              'fixations': fixations,
+              'blinks': blinks}
+    
+    for event_key, event in events.items():
+    
+        start_index = -1
+        end_index = -1
+        temp_result = []
+        result = []
+        for i in range(len(event)):
+            if i != (len(event) - 1):
+                if ((event[i] + 1) == event[i+1]) and (start_index == -1):
+                    start_index = i
+                elif ((event[i] + 1) == event[i+1]) and (start_index != -1):
+                    continue
+                elif ((event[i] + 1) != event[i+1]) and (start_index != -1):
+                    end_index = i+1
+                    temp_result = event[start_index: end_index]
+                    result.append(temp_result)
+                    start_index = -1
+                    end_index = -1
+                    temp_result = []
+                elif ((event[i] + 1) != event[i+1]) and (start_index == -1):
+                    result.append([event[i]])
+            else:
+                if start_index == -1:
+                    result.append([event[i]])
+                elif (start_index != -1) and ((event[i] - 1) == event[i - 1]):
+                    end_index = i
+                    result.append(event[start_index:])
+        
+        events[event_key] = result
+
+    return events
