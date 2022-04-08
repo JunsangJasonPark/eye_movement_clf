@@ -250,3 +250,6 @@ def classify_events(velocity_data, velocity_threshold = 30):
         events[event_key] = result
 
     return events
+
+def event_to_timestamp():
+    pass
