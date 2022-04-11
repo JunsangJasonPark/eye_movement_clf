@@ -253,3 +253,38 @@ def classify_events(velocity_data, velocity_threshold = 30):
 
 def event_to_timestamp():
     pass
+
+def draw_classified_events(coordinate_data, velocity_data):
+    background_color = {
+        'saccades': 'yellow',
+        'fixations': 'green',
+        'blinks': 'black'
+    }
+    
+    result = classify_events(velocity_data)
+    ts = coordinate_data['Timestamp']
+    
+    plt.style.use('default')
+    plt.rcParams['figure.figsize'] = (10, 3)
+    plt.rcParams['font.size'] = 10
+
+    fig, coordinate = plt.subplots()
+
+    coordinate.set_xlabel('Timestamp')
+    coordinate.set_ylabel('X-Y coordinate')
+    coordinate.scatter(coordinate_data['Timestamp'], coordinate_data['X'], s = 6, color = 'black')
+    coordinate.scatter(coordinate_data['Timestamp'], coordinate_data['Y'], s = 6, color = 'black')
+
+    velocity = coordinate.twinx()
+    velocity.set_ylabel("Velocity(deg/s)")
+    velocity.plot(coordinate_data['Timestamp'], velocity_data, color='deeppink')
+
+    for key, value in result.items():
+        for i in value:
+            span_start = ts[i[0]-1]
+            span_end = ts[i[-1]]
+            plt.axvspan(span_start,
+                       span_end,
+                       facecolor=background_color[key],
+                       alpha=0.5)
+    plt.show()
