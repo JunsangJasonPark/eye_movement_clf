@@ -288,3 +288,19 @@ def draw_classified_events(coordinate_data, velocity_data):
                        facecolor=background_color[key],
                        alpha=0.5)
     plt.show()
+
+def update_threshold(velocity_data, threshold):
+    velocity_below_threshold = velocity_data[np.where(velocity_data < threshold)]
+    mean = velocity_below_threshold.mean()
+    std = velocity_below_threshold.std()
+    updated_threshold = mean + (std * 6)
+    
+    return updated_threshold
+
+def find_adaptive_threshold(velocity_data, threshold):
+    while abs(update_threshold(velocity_data, threshold) - threshold) > 1:
+        threshold = update_threshold(velocity_data, threshold)
+    return threshold
+
+# find_adaptive_threshold(velocity_data, 2)
+
