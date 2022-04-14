@@ -25,7 +25,6 @@ def pixel_to_degree(screen_size, distance, screen_resolution):
 
 def load_data(file_name):
     data = pd.read_csv(file_name)
-    data.dropna(inplace=True)
     ts, x, y = np.array(data['ts']), np.array(data['x']), np.array(data['y'])
     coordinate_data = {
         'Timestamp': ts,
@@ -225,7 +224,9 @@ def draw_coordinate_velocity(coordinate_data, velocity_data):
     
 def classify_events(velocity_data, velocity_threshold = 30):
     
-    velocity_threshold = find_adaptive_threshold(velocity_data, velocity_threshold)
+    velocity_threshold = velocity_threshold
+    # 데이터 충분할 때는 아래 코드 이용
+    # velocity_threshold = find_adaptive_threshold(velocity_data, velocity_threshold)
     
     saccades = np.where(velocity_data > velocity_threshold)[0]
     fixations = np.where(velocity_data <= velocity_threshold)[0]
@@ -314,3 +315,18 @@ def find_adaptive_threshold(velocity_data, threshold):
     while abs(update_threshold(velocity_data, threshold) - threshold) > 1:
         threshold = update_threshold(velocity_data, threshold)
     return threshold
+
+# find_adaptive_threshold(velocity_data, 2)
+
+def save_result(coordinate_data, velocity_data):
+    result = classify_events(velocity_data)
+    timestamp = coordinate_data['Timestamp']
+    output = []
+    for key, value in result.items():
+        for i in value:
+            span_start = timestamp[i[0]-1]
+            span_end = timestamp[i[-1]]
+            output.append([key, span_start, span_end, (span_end-span_start)])
+    df_output = pd.DataFrame(data = output,
+                             columns = ['label', 'start_time', 'end_tiem', 'duration'])
+    df_output.to_csv("output.csv")
